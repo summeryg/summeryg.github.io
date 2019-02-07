@@ -21,8 +21,10 @@
 
     <!-- imports libraries to import fbx animations -->
     <script src="../build/three.js"></script>
-
+    
     <script src="js/loaders/OBJLoader.js"></script>
+    <script src="js/loaders/MTLLoader.js"></script>
+    <script src="js/loaders/DDSLoader.js"></script>
 
     <script src="js/libs/inflate.min.js"></script>
     <script src="js/loaders/FBXLoader.js"></script>
@@ -30,17 +32,17 @@
     <script src="js/controls/OrbitControls.js"></script>
 
     <script src="js/Detector.js"></script>
-    <!--ALREADY IMPORTED- <script src="js/libs/stats.min.js"></script> -->
-
+    <!--ALREADY IMPORTED-- <script src="js/libs/stats.min.js"></script> -->
+    
     <script>
-
+        
         if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
+        
         var clock = new THREE.Clock();
         var mixers = [];
         var stats;
-
-
+    
+        
 	//////////////////////////////////////////////////////////////////////////////////
 	//		Init
     //      sets up how the webpage will be diplayed (fullscreen)
@@ -61,7 +63,7 @@
         var onRenderFcts= [];
         // init scene and camera
         var scene	= new THREE.Scene();
-
+        
         light = new THREE.HemisphereLight( 0xffffff, 0x444444 );
         light.position.set( 0, 200, 0 );
         scene.add( light );
@@ -73,7 +75,7 @@
         light.shadow.camera.left = -120;
         light.shadow.camera.right = 120;
         scene.add( light );
-
+        
         //////////FROM FBX IMPORT
         container = document.createElement( 'div' );
         document.body.appendChild( container );
@@ -90,14 +92,14 @@
         var arToolkitSource = new THREEx.ArToolkitSource({
             // to read from the webcam (comment out line below if using static image or video file)
             sourceType : 'webcam',
-
+            
             // to read from an image uncomment two lines below (remove // at the beginning of each line)
             // sourceType : 'image',
-            // sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/images/img.jpg',
-
+            // sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/images/img.jpg',		
+            
             // to read from a video uncomment two lines below (remove // at the beginning of each line)
             // sourceType : 'video',
-            // sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/videos/headtracking.mp4',
+            // sourceUrl : THREEx.ArToolkitContext.baseURL + '../data/videos/headtracking.mp4',		
         })
         arToolkitSource.init(function onReady(){
             onResize()
@@ -107,11 +109,11 @@
             onResize()
         })
         function onResize(){
-            arToolkitSource.onResize()
-            arToolkitSource.copySizeTo(renderer.domElement)
+            arToolkitSource.onResize()	
+            arToolkitSource.copySizeTo(renderer.domElement)	
             if( arToolkitContext.arController !== null ){
-                arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)
-            }
+                arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
+            }	
         }
         ////////////////////////////////////////////////////////////////////////////////
         //          initialize arToolkitContext
@@ -168,48 +170,52 @@
         //////////////////////////////////////////////////////////////////////////////////
         var arWorldRoot = smoothedRoot;
         var geometry, material, mesh;
-
-        ///////////////////////////////////////////////////////////
-        // add a static cube
+        
+//        ///////////////////////////////////////////////////////////
+//        // add a static cube
         geometry = new THREE.CubeGeometry(1,1,1);
         material = new THREE.MeshNormalMaterial({
             transparent : true,
             opacity: 0.5,
             side: THREE.DoubleSide
-        });
+        }); 
         mesh = new THREE.Mesh( geometry, material );
         mesh.position.y	= geometry.parameters.height/2
         arWorldRoot.add(mesh);
-        // end cube code
+//        // end cube code
+//        ///////////////////////////////////////////////////////////
+        
+    
+        
         ///////////////////////////////////////////////////////////
-
-
-
-        ///////////////////////////////////////////////////////////
-        //add icosphere test from 3js playground
-        geometry = new THREE.IcosahedronGeometry(1, 1);
-material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading,side:THREE.DoubleSide});
-mesh = new THREE.Mesh(geometry, material);
-        mesh.position.y	= 0.5 //position y equals how far away from target
+        //icosphere: example from from 3js playground 
+        //add the geometry, material, and mesh lines from the 3js GUI
+        //MAKE SURE SCALE IS 1 (a scale of 1 will mean your object is as big as the image target)
+        geometry = new THREE.CubeGeometry(1, 1, 1);
+        material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading});
+        mesh = new THREE.Mesh(geometry, material);
+        
+        //Keep these lines
+        mesh.position.y	= 0.5 //position y equals how far away from target 
         arWorldRoot.add( mesh ); //instead of adding mesh to the scene right away we add only when the target is detected
         //end icosphere code
         ///////////////////////////////////////////////////////////
-
-
-        ///////////////////////////////////////////////////////////
-//        // add a taurus with rotation animation
-//        geometry = new THREE.TorusKnotGeometry(0.3,0.1,64,16);
-//        material = new THREE.MeshNormalMaterial();
-//        mesh = new THREE.Mesh( geometry, material );
-//        mesh.position.y	= 0.5
-//        arWorldRoot.add( mesh );
-//        onRenderFcts.push(function(){
-//            mesh.rotation.x += 0.1
-//        })
-//        // end taurus code
-       ///////////////////////////////////////////////////////////
-
-
+        
+        
+        /////////////////////////////////////////////////////////
+        // add a taurus with rotation animation
+        geometry = new THREE.TorusKnotGeometry(0.3,0.1,64,16);
+        material = new THREE.MeshNormalMaterial(); 
+        mesh = new THREE.Mesh( geometry, material );
+        mesh.position.y	= 0.5
+        arWorldRoot.add( mesh );
+        onRenderFcts.push(function(){
+            mesh.rotation.x += 0.1
+        })
+        // end taurus code
+       /////////////////////////////////////////////////////////
+        
+        
         ///////////////////////////////////////////////////////////
         // add a fbx model with animation
         var loader = new THREE.FBXLoader();
@@ -229,11 +235,11 @@ mesh = new THREE.Mesh(geometry, material);
         } );
         //end fbx code
         ///////////////////////////////////////////////////////////
-
-
+        
+        
         ///////////////////////////////////////////////////////////
          //add obj model (static)
-         // obj texture
+         // obj texture from jpg
 
          var manager = new THREE.LoadingManager();
          manager.onProgress = function ( item, loaded, total ) {
@@ -243,7 +249,7 @@ mesh = new THREE.Mesh(geometry, material);
          };
 
          var textureLoader = new THREE.TextureLoader( manager );
-         var texture = textureLoader.load( '../../data/data/UV_Grid_Sm.jpg' );
+         var texture = textureLoader.load( '../../data/data/cheetah.jpeg' );
 
          // obj model
          var onProgress = function ( xhr ) {
@@ -278,16 +284,47 @@ mesh = new THREE.Mesh(geometry, material);
 
          //end obj code
         ///////////////////////////////////////////////////////////
+        
+        
+         ///////////////////////////////////////////////////////////
+         //add obj model2 (static) with material textures
+
+        var onProgress = function ( xhr ) {
+            if ( xhr.lengthComputable ) {
+                var percentComplete = xhr.loaded / xhr.total * 100;
+                console.log( Math.round( percentComplete, 2 ) + '% downloaded' );
+            }
+        };
+        var onError = function () { };
+        THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+        new THREE.MTLLoader()
+            .setPath( '../../data/data/' )
+            .load( 'obj-material-test2.mtl', function ( materials ) {
+                materials.preload();
+                new THREE.OBJLoader()
+                    .setMaterials( materials )
+                    .setPath( '../../data/data/' )
+                    .load( 'obj-material-test2.obj', function ( object ) {
+                        object.scale.set(.4, .4, .4);
+                        arWorldRoot.add( object );
+                    }, onProgress, onError );
+            } );
+        
 
 
+         //end obj2 code
+        ///////////////////////////////////////////////////////////
+        
+        
+        
         //////////FROM FBX IMPORT
         stats = new Stats();
         container.appendChild( stats.dom );
-
+        
 	//////////////////////////////////////////////////////////////////////////////////
 	//		render the whole thing on the page
 	//////////////////////////////////////////////////////////////////////////////////
-
+	
         var stats2 = new Stats();
         document.body.appendChild( stats2.dom );
         // render the scene
@@ -310,9 +347,9 @@ mesh = new THREE.Mesh(geometry, material);
                 onRenderFct(deltaMsec/1000, nowMsec/1000)
             })
         })
-
+        
     animate();
-
+        
         function animate() {
 				requestAnimationFrame( animate );
 				if ( mixers.length > 0 ) {
@@ -323,5 +360,5 @@ mesh = new THREE.Mesh(geometry, material);
 				renderer.render( scene, camera );
 				stats.update();
 			}
-
+    
 </script></body>
